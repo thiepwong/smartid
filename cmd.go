@@ -8,9 +8,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"smartid/app/smartid"
-
-	//	"github.com/thiepwong/smartid/app/smartid"
 
 	"github.com/go-ini/ini"
 )
@@ -51,9 +48,4 @@ func main() {
 		os.Exit(0)
 	}
 
-	if runSmartId {
-		smartid.Main()
-		fmt.Println("Da khoi dong app chinh")
-		os.Exit(0)
-	}
 }
