@@ -14,7 +14,6 @@ import (
 
 func main() {
 	var showVersion bool
-	var runSmartId bool
 
 	cfg, err := ini.Load("conf/app.conf")
 	if err != nil {
@@ -38,8 +37,6 @@ func main() {
 
 	flag.BoolVar(&showVersion, "version", false, "Print version information.")
 	flag.BoolVar(&showVersion, "v", false, "Print version information.")
-
-	flag.BoolVar(&runSmartId, "s", false, "Start smart id module")
 
 	flag.Parse()
 	// Show version and exit
