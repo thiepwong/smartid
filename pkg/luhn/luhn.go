@@ -1,8 +1,8 @@
-// luhn package
+// luhn luhn
 // generate the code base on Luhn algorithm
 // Author: Thiep Wong
 // Created: 13.3.2019
-package main
+package luhn
 
 import (
 	"errors"
@@ -128,19 +128,19 @@ func GenerateSmartID(systemCode int, nodeCode int, size int) (id uint64, err err
 	return accountID, err
 }
 
-func main() {
+// func main() {
 
-	x := randomString(5)
-	fmt.Println(x)
-	controlDigit := strconv.Itoa(generateControlDigit(x))
-	x += controlDigit
-	fmt.Println("So check", controlDigit)
-	fmt.Println(x)
-	fmt.Println(Valid(x))
-	id, _err := GenerateSmartID(6, 0xff, 0x10)
-	if _err != nil {
-		logger.LogErr.Println("Da bi loi khi tao ID")
-	}
-	fmt.Println("Da tao tai khoan la: ", id)
-	logger.LogInfo.Println(fmt.Sprintf("So ngau nhien: %s -------- So kiem tra: %s ------------- Ma ID da sinh: %d", x, controlDigit, id))
-}
+// 	x := randomString(5)
+// 	fmt.Println(x)
+// 	controlDigit := strconv.Itoa(generateControlDigit(x))
+// 	x += controlDigit
+// 	fmt.Println("So check", controlDigit)
+// 	fmt.Println(x)
+// 	fmt.Println(Valid(x))
+// 	id, _err := GenerateSmartID(6, 0xff, 0x10)
+// 	if _err != nil {
+// 		logger.LogErr.Println("Da bi loi khi tao ID")
+// 	}
+// 	fmt.Println("Da tao tai khoan la: ", id)
+// 	logger.LogInfo.Println(fmt.Sprintf("So ngau nhien: %s -------- So kiem tra: %s ------------- Ma ID da sinh: %d", x, controlDigit, id))
+// }

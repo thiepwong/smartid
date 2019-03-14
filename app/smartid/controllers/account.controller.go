@@ -25,18 +25,24 @@ func (c *AccountController) Get() (results string) {
 	return msg.String()
 }
 
+func (c *AccountController) SignUp(ctx *iris.Context) (results string) {
+	return "edtr"
+}
+
 func AccountHanlder(app *mvc.Application) {
 	dialInfo, err := mgo.ParseURL("mongodb://171.244.49.164:2688/ucenter")
 
 	session, err := mgo.DialWithInfo(dialInfo)
+
+	s := session.Copy()
 	if nil != err {
 		panic(err)
 	}
-	//	defer session.Close()
+	defer session.Close()
 	session.SetMode(mgo.Monotonic, true)
 	db := session.DB("test")
 
-	myService := services.NewAccountService(db, session)
+	myService := services.NewAccountService(db, s)
 	app.Register(myService)
 
 	app.Handle(new(AccountController))

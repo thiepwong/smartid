@@ -3,9 +3,14 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
+	"time"
+
+	"github.com/thiepwong/smartid/pkg/wallet"
 
 	"github.com/thiepwong/smartid/app/smartid/models"
 	"github.com/thiepwong/smartid/app/smartid/repositories"
+	"github.com/thiepwong/smartid/pkg/luhn"
 	"gopkg.in/mgo.v2"
 )
 
@@ -36,29 +41,52 @@ func (s *accountService) Signup(data *models.SignupModel) bool {
 }
 
 func (s *accountService) Get() string {
-	account := models.SignupModel{ID: 3435353535445,
-		Username: models.Username{Mobile: "0983851116",
-			Email: "thiep.wong@gmail.com"},
-		Mobile:   "0983851116",
-		Email:    "thiep.wong@gmail.com",
-		Fulname:  "Hoang Van Thiep",
-		Birthday: 12312312313,
-		Profile:  models.Profiles{Avatar: "http://avatar.com", Cover: "http://cover.com"}}
-	//myModel.CreatedTime = time.Now()
-	//return db.Insert(s.Table, myModel)
-	err := s.Table.Insert(account)
+
+	_begin := time.Now()
+	fmt.Println("Bat dau: ", _begin)
+	// var _accArray []models.AccountModel
+	// for i := 0; i < 10000; i++ {
+
+	_id, err := luhn.GenerateSmartID(8, 0x8, 16)
+	_wl, err := wallet.CreateWallet()
+
+	//	fmt.Println("Da tao duoc vi la: ", _wl.Address, _wl.PublicKey)
+	_acModel := models.AccountModel{ID: _id,
+		Username:  models.Username{Mobile: strconv.FormatUint(_id, 10), Email: "abc@" + strconv.FormatUint(_id, 10)},
+		Mobile:    strconv.FormatUint(_id, 10),
+		Email:     "abc@" + strconv.FormatUint(_id, 10),
+		Firstname: "Hoang",
+		Midname:   "Van",
+		Lastname:  "Thiep",
+		SocialID:  []models.SocialID{models.SocialID{Network: "facebook", Id: "345345353453"}},
+		Wallet:    _wl,
+		Profiles:  models.Profiles{Avatar: "http://avatar.com", Cover: "http://cover.com"}}
+
+	//_accArray = append(_accArray, _acModel)
+	//	}
+
+	err = s.Table.Insert(_acModel)
 	if err != nil {
 		fmt.Println("Loi insert roi")
 		return err.Error()
 	}
 
-	j, er := json.Marshal(account)
+	_begin.Unix()
+	_end := time.Now()
+	fmt.Println("Ket thuc: ", _end)
+	fmt.Println("Thoi gian thuc hien: ", _end.Unix()-_begin.Unix())
+	j, er := json.Marshal(testTime{begin: _begin, end: _end})
 
 	if er != nil {
 		return "error!"
 	}
 
 	return string(j)
+}
+
+type testTime struct {
+	begin time.Time
+	end   time.Time
 }
 
 func (s *accountService) Signin(username string, password string) bool {
