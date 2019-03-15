@@ -4,13 +4,18 @@ import "github.com/thiepwong/smartid/pkg/wallet"
 
 // SignupModel struct is member signup data
 type SignupModel struct {
-	ID       uint64 `bson:"_id,omitempty"`
-	Username Username
-	Mobile   string
-	Email    string
-	Fulname  string
-	Birthday int
-	Profile  Profiles
+	Username  string
+	Password  string
+	Firstname string
+	Midname   string
+	Lastname  string
+	Birthday  int
+	Gender    bool
+}
+
+type SigninModel struct {
+	Username string
+	Password string
 }
 
 type AccountModel struct {

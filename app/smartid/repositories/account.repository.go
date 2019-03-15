@@ -1,31 +1,52 @@
 package repositories
 
 import (
-	"sync"
+	"github.com/thiepwong/smartid/app/smartid/models"
+	"gopkg.in/mgo.v2"
 )
 
-//type Query func(models.SignupModel) bool
 type AccountRepository interface {
-	//	Exec(query Query, action Query, limit int, mode int) (ok bool)
-
-	//	Select(query Query) (signup models.SignupModel, found bool)
-	//	SelectMany(query Query, limit int) (results []models.SignupModel)
-	Get() string
-
-	//	InsertOrUpdate(signup models.SignupModel) (updatedMovie models.SignupModel, err error)
-	//	Delete(query Query, limit int) (deleted bool)
+	Save(*models.AccountModel) (*models.AccountModel, error)
+	Update(*models.AccountModel) (*models.AccountModel, error)
+	FindById(uint64) (*models.AccountModel, error)
+	FindByUsername(*models.Username) (*models.AccountModel, error)
+	FindAll() (*models.AccountModel, error)
 }
 
-func (r *accountRepository) Get() string {
-
-	return r.source
+type AccountRepositoryContext struct {
+	db         *mgo.Database
+	collection string
 }
 
-func RegisterNewAccountRepository(source string) AccountRepository {
-	return &accountRepository{source: source}
+func NewAccountRepositoryContext(db *mgo.Database, collection string) *AccountRepositoryContext {
+	return &AccountRepositoryContext{
+		db:         db,
+		collection: collection,
+	}
 }
 
-type accountRepository struct {
-	source string
-	mu     sync.RWMutex
+//Save
+func (r *AccountRepositoryContext) Save(accountModel *models.AccountModel) (*models.AccountModel, error) {
+	err := r.db.C(r.collection).Insert(accountModel)
+	return accountModel, err
+}
+
+// Update
+func (r *AccountRepositoryContext) Update(accountModel *models.AccountModel) (*models.AccountModel, error) {
+	return nil, nil
+}
+
+//FindbyId
+func (r *AccountRepositoryContext) FindById(uint64) (*models.AccountModel, error) {
+	return nil, nil
+}
+
+// FindByUsername
+func (r *AccountRepositoryContext) FindByUsername(accountModel *models.Username) (*models.AccountModel, error) {
+	return nil, nil
+}
+
+//FindAll
+func (r *AccountRepositoryContext) FindAll() (*models.AccountModel, error) {
+	return nil, nil
 }
