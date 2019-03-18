@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"bytes"
+	"encoding/json"
 	"fmt"
 	"log"
 
@@ -9,71 +9,78 @@ import (
 
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
-	"github.com/thiepwong/smartid/app/smartid/datasources"
 	"github.com/thiepwong/smartid/app/smartid/models"
 	"github.com/thiepwong/smartid/app/smartid/services"
-	"gopkg.in/mgo.v2"
 )
 
 type AccountController struct {
-	Ctx     iris.Context
-	Service services.AccountService
-	Session *mgo.Session
-}
-
-// Get func to get all
-func (c *AccountController) Get() (results string) {
-	//	results = c.Service.Get()
-	r := c.Ctx.URLParam("name")
-	d := c.Service.Get()
-	var msg bytes.Buffer
-	fmt.Fprintf(&msg, "Da nhan duoc du lieu %s \r\n va phan hoi la: %s ", r, d)
-	return msg.String()
-}
-
-type MvcResult struct {
-	Version string
-	Result  string
+	Ctx            iris.Context
+	AccountService services.AccountService
 }
 
 //BeforeActivation
 // Register paths of controllers
 func (c *AccountController) BeforeActivation(b mvc.BeforeActivation) {
 	b.Handle("POST", "/register", "PostSignup")
+	b.Handle("POST", "/signin", "PostSignin")
+	b.Handle("POST", "/test", "PostTest")
 }
 
-func (c *AccountController) PostSignup() (results models.SignupModel) {
+func (c *AccountController) PostSignup() (results string) {
 	var _signupData = models.SignupModel{}
-	err := c.Ctx.ReadJSON(&_signupData)
-	if err != nil {
+	er := c.Ctx.ReadJSON(&_signupData)
+	if er != nil {
 		log.Fatal()
 		return
 	}
 
-	e := c.Session.DB("test").C("account").Insert(MvcResult{Result: "Ok", Version: "2.445"})
-	if e != nil {
-		logger.LogErr.Println(err.Error())
+	var _sign models.SignupModel
+	_sign.Firstname = _signupData.Firstname
+	_sign.Lastname = _signupData.Lastname
+	_sign.Username = _signupData.Username
+	_sign.Password = _signupData.Password
+
+	acc, err := c.AccountService.RegisterAccount(&_sign)
+
+	if err != nil {
+		logger.LogErr.Println(err)
 	}
-	//	res, err := json.Marshal(_signupData)
-	//	d := c.Service.Signup(c.Session, &_signupData)
-	return models.SignupModel{}
+
+	res, e := json.Marshal(acc)
+	if e != nil {
+		logger.LogErr.Println(e)
+	}
+	return string(res)
 }
 
-func AccountHanlder(app *mvc.Application) {
-	//	dialInfo, err := mgo.ParseURL("mongodb://171.244.49.164:2688/ucenter")
+func (c *AccountController) PostSignin() (results string) {
+	var _signinData = models.SigninModel{}
+	err := c.Ctx.ReadJSON(&_signinData)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
 
-	//	session, err := mgo.DialWithInfo(dialInfo)
+	fmt.Printf("Kiem tra bien C = %x", &c)
 
-	///	s := session.Copy()
-	//	if nil != err {
-	//	panic(err)
-	//	}
-	//	defer session.Close()
-	//	session.SetMode(mgo.Monotonic, true)
-	//	db := session.DB("test")
+	c.AccountService.SigninAccount(_signinData)
 
-	s := datasources.GetSession()
-	myService := services.NewAccountService(s)
-	app.Register(myService)
-	app.Handle(new(AccountController))
+	return "Da dang nhap"
 }
+
+func (c *AccountController) PostTest() string {
+
+	var profile models.SignupModel
+
+	a := c.Ctx.URLParam("name")
+	profile.Firstname = a
+	z := c.AccountService.Test(&profile)
+	return z
+}
+
+// func AccountHanlder(app *mvc.Application) {
+
+// 	//app.Register(accountService)
+
+// 	app.Handle(new(AccountController))
+// }

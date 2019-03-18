@@ -7,7 +7,6 @@ type SignupModel struct {
 	Username  string
 	Password  string
 	Firstname string
-	Midname   string
 	Lastname  string
 	Birthday  int
 	Gender    bool
@@ -25,7 +24,6 @@ type AccountModel struct {
 	Mobile    string
 	Email     string
 	Firstname string
-	Midname   string
 	Lastname  string
 	Birthday  int
 	SocialID  []SocialID
