@@ -60,7 +60,7 @@ func (accountService *accountServiceImpl) RegisterAccount(account *models.Signup
 
 	_acModel.Birthday = account.Birthday
 	_acModel.Firstname = account.Firstname
-	_acModel.Lastname = account.Lastname
+	_acModel.Surname = account.Surname
 	_acModel.Wallet = _wl
 	res, err := accountService.accountRepository.Save(&_acModel)
 	return res, err

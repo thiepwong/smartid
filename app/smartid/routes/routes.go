@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/kataras/iris"
+	"github.com/kataras/iris/context"
 	"github.com/kataras/iris/mvc"
 	"github.com/thiepwong/smartid/app/smartid/controllers"
 	"github.com/thiepwong/smartid/app/smartid/datasources"
@@ -13,7 +14,9 @@ import (
 	"github.com/thiepwong/smartid/app/smartid/services"
 )
 
-func RegisterRoute(app *iris.Application) {
+type SetHeader func(iris.Context)
+
+func RegisterRoute(app *iris.Application, cors context.Handler) {
 
 	db, err := datasources.GetMongoDb()
 	if err != nil {
@@ -28,10 +31,9 @@ func RegisterRoute(app *iris.Application) {
 	fmt.Printf("ten co so du lieu: %d   ", _c)
 	accountRepository := repositories.NewAccountRepositoryContext(db, "accounts")
 	accountService := services.NewAccountService(accountRepository)
-
-	account := mvc.New(app.Party("/account").AllowMethods(iris.MethodPost, iris.MethodOptions))
-	//	account := mvc.New(app.Party("/account").AllowMethods(iris.MethodOptions))
-	account.Register(accountService)
+	mvcResult := controllers.NewMvcResult(nil)
+	account := mvc.New(app.Party("/account", cors).AllowMethods(iris.MethodOptions))
+	account.Register(accountService, mvcResult)
 	account.Handle(new(controllers.AccountController))
 
 	auth := mvc.New(app.Party("/auth"))

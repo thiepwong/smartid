@@ -27,15 +27,15 @@ func main() {
 	fmt.Println(&config.system, *config.node, *config.host, *config.port, *config.cfgpath)
 
 	app := iris.New()
-	app.Use(func(ctx iris.Context) {
-		ctx.Header("Vary", "Access-Control-Request-Method")
+
+	crs := func(ctx iris.Context) {
 		ctx.Header("Access-Control-Allow-Origin", "*")
-		ctx.Header("Access-Control-Request-Headers", "Accept,content-type,X-Requested-With,Content-Length,Accept-Encoding,X-CSRF-Token,Authorization,token")
-		ctx.Header("Access-Control-Request-Method", "*")
+		ctx.Header("Access-Control-Allow-Credentials", "true")
+		ctx.Header("Access-Control-Allow-Headers", "Access-Control-Allow-Origin,Content-Type")
 		ctx.Next()
-	})
+	}
 	app.Logger().SetLevel("debug")
-	routes.RegisterRoute(app)
+	routes.RegisterRoute(app, crs)
 
 	er := app.Run(iris.Addr(*config.host+":"+strconv.Itoa(*config.port)), iris.WithoutPathCorrectionRedirection)
 	if er != nil {

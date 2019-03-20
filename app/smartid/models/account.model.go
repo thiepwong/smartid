@@ -7,7 +7,7 @@ type SignupModel struct {
 	Username  string
 	Password  string
 	Firstname string
-	Lastname  string
+	Surname   string
 	Birthday  int
 	Gender    int
 }
@@ -21,10 +21,11 @@ type AccountModel struct {
 	ID        uint64 `bson:"_id,omitempty"`
 	Wallet    wallet.Wallet
 	Username  Username
+	Password  string
 	Mobile    string
 	Email     string
 	Firstname string
-	Lastname  string
+	Surname   string
 	Birthday  int
 	SocialID  []SocialID
 	Profiles  Profiles

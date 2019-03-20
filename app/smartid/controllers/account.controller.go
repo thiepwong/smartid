@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"errors"
 	"fmt"
 	"log"
 
@@ -17,6 +16,7 @@ import (
 type AccountController struct {
 	Ctx            iris.Context
 	AccountService services.AccountService
+	Result         MvcResult
 }
 
 //BeforeActivation fuc
@@ -27,22 +27,23 @@ func (c *AccountController) BeforeActivation(b mvc.BeforeActivation) {
 }
 
 // PostSignup method
-func (c *AccountController) PostSignup() (results *models.AccountModel, err error) {
+func (c *AccountController) PostSignup() MvcResult {
 	var _signupData = models.SignupModel{}
 	er := c.Ctx.ReadJSON(&_signupData)
 	if er != nil {
 		logger.LogErr.Println(er)
-		return
+		return c.Result
 	}
 
-	if _signupData.Username == "" || _signupData.Firstname == "" || _signupData.Lastname == "" || _signupData.Password == "" {
+	if _signupData.Username == "" || _signupData.Firstname == "" || _signupData.Surname == "" || _signupData.Password == "" {
 		logger.LogDebug.Println("Signup infomation is invalid!")
-		return nil, errors.New("Loi roi")
+		c.Result.GenerateResult(501, "Loi me no roi", nil)
+		return c.Result
 	}
 
 	var _sign models.SignupModel
 	_sign.Firstname = _signupData.Firstname
-	_sign.Lastname = _signupData.Lastname
+	_sign.Surname = _signupData.Surname
 	_sign.Username = _signupData.Username
 	_sign.Password = _signupData.Password
 
@@ -50,9 +51,12 @@ func (c *AccountController) PostSignup() (results *models.AccountModel, err erro
 
 	if err != nil {
 		logger.LogErr.Println(err)
+		c.Result.GenerateResult(401, err.Error(), nil)
+		return c.Result
 	}
 
-	return acc, err
+	c.Result.GenerateResult(0, "", acc)
+	return c.Result
 }
 
 //PostSignin func
