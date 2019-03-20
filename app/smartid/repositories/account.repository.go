@@ -1,8 +1,6 @@
 package repositories
 
 import (
-	"fmt"
-
 	"github.com/thiepwong/smartid/app/smartid/models"
 	"gopkg.in/mgo.v2"
 )
@@ -29,7 +27,6 @@ func NewAccountRepositoryContext(db *mgo.Database, collection string) *accountRe
 
 //Save
 func (r *accountRepositoryContext) Save(accountModel *models.AccountModel) (*models.AccountModel, error) {
-	fmt.Println("insert vao collect ", r.collection)
 	err := r.db.C(r.collection).Insert(accountModel)
 	return accountModel, err
 }

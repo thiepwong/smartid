@@ -9,7 +9,7 @@ type SignupModel struct {
 	Firstname string
 	Lastname  string
 	Birthday  int
-	Gender    bool
+	Gender    int
 }
 
 type SigninModel struct {

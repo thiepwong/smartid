@@ -3,16 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
-	"os"
 	"strconv"
 
 	"github.com/kataras/iris"
-	"github.com/kataras/iris/mvc"
-	"github.com/thiepwong/smartid/app/smartid/controllers"
-	"github.com/thiepwong/smartid/app/smartid/datasources"
-	"github.com/thiepwong/smartid/app/smartid/repositories"
-	"github.com/thiepwong/smartid/app/smartid/services"
+	"github.com/thiepwong/smartid/app/smartid/routes"
 )
 
 type Config struct {
@@ -30,31 +24,20 @@ func main() {
 	if es != nil {
 
 	}
-	fmt.Println(&config.system, *config.node, *config.host, *config.port, *config.cfgpath) //AR 3700
+	fmt.Println(&config.system, *config.node, *config.host, *config.port, *config.cfgpath)
 
 	app := iris.New()
+	app.Use(func(ctx iris.Context) {
+		ctx.Header("Vary", "Access-Control-Request-Method")
+		ctx.Header("Access-Control-Allow-Origin", "*")
+		ctx.Header("Access-Control-Request-Headers", "Accept,content-type,X-Requested-With,Content-Length,Accept-Encoding,X-CSRF-Token,Authorization,token")
+		ctx.Header("Access-Control-Request-Method", "*")
+		ctx.Next()
+	})
 	app.Logger().SetLevel("debug")
-	//	routes.RegisterRoute(app)
+	routes.RegisterRoute(app)
 
-	db, err := datasources.GetMongoDb()
-	if err != nil {
-		fmt.Println("Loi ket noi co so du lieu ", err)
-		log.Fatal(err)
-		os.Exit(2)
-	}
-	_c, _e := db.C("accounts").Count()
-	if _e != nil {
-	}
-
-	fmt.Printf("ten co so du lieu: %d   ", _c)
-	accountRepository := repositories.NewAccountRepositoryContext(db, "accounts")
-	accountService := services.NewAccountService(accountRepository)
-
-	account := mvc.New(app.Party("/account"))
-	account.Register(accountService)
-	account.Handle(new(controllers.AccountController))
-
-	er := app.Run(iris.Addr(*config.host + ":" + strconv.Itoa(*config.port)))
+	er := app.Run(iris.Addr(*config.host+":"+strconv.Itoa(*config.port)), iris.WithoutPathCorrectionRedirection)
 	if er != nil {
 		fmt.Println("Server not started!")
 	}

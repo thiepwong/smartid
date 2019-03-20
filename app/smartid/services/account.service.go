@@ -1,7 +1,6 @@
 package services
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -27,6 +26,7 @@ type accountServiceImpl struct {
 	accountRepository repositories.AccountRepository
 }
 
+//NewAccountService register new Service
 func NewAccountService(repo repositories.AccountRepository) AccountService {
 
 	return &accountServiceImpl{accountRepository: repo}
@@ -35,7 +35,7 @@ func NewAccountService(repo repositories.AccountRepository) AccountService {
 // RegisterAccount
 func (accountService *accountServiceImpl) RegisterAccount(account *models.SignupModel) (*models.AccountModel, error) {
 
-	fmt.Println("Ten da nhap", account.Username)
+	// fmt.Println("Ten da nhap", account.Username)
 	var _acModel models.AccountModel
 	var Err error
 	_acModel.Username, _acModel.Mobile, _acModel.Email, Err = validateUsername(account.Username)
@@ -46,7 +46,7 @@ func (accountService *accountServiceImpl) RegisterAccount(account *models.Signup
 	_isExist := checkExist(accountService, &_acModel.Username)
 
 	if _isExist == true {
-		return nil, errors.New("username is existed!")
+		return nil, errors.New("username is existed")
 	}
 
 	_id, err := luhn.GenerateSmartID(8, 0x8, 16)
@@ -63,7 +63,7 @@ func (accountService *accountServiceImpl) RegisterAccount(account *models.Signup
 	_acModel.Lastname = account.Lastname
 	_acModel.Wallet = _wl
 	res, err := accountService.accountRepository.Save(&_acModel)
-	return res, nil
+	return res, err
 }
 
 //Signin
@@ -74,6 +74,7 @@ func (accountService *accountServiceImpl) Signin(userInfo models.SigninModel) st
 	return "da vao trong service!"
 }
 
+//Test func
 func (s *accountServiceImpl) Test(profile *models.SignupModel) string {
 	return "Da doc duoc trong server la: " + profile.Firstname
 }
@@ -91,6 +92,10 @@ func (s *accountServiceImpl) UpdateAccount(profile *models.AccountModel) (*model
 }
 
 func validateUsername(username string) (Username models.Username, Mobile string, Email string, Err error) {
+	if username == "" {
+		Err = errors.New("Invalid username")
+		return Username, Mobile, Mobile, Err
+	}
 	emailReg := regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 	isEmail := emailReg.MatchString(username)
 	if isEmail == true {
@@ -116,8 +121,6 @@ func validateUsername(username string) (Username models.Username, Mobile string,
 func checkExist(s *accountServiceImpl, username *models.Username) bool {
 
 	a, e := s.accountRepository.FindByUsername(username)
-	k, _ := json.Marshal(a)
-	fmt.Println(string(k))
 	if e != nil {
 		logger.LogErr.Println(e)
 		return false

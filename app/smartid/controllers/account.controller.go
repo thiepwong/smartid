@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 
@@ -13,25 +13,31 @@ import (
 	"github.com/thiepwong/smartid/app/smartid/services"
 )
 
+//AccountController type
 type AccountController struct {
 	Ctx            iris.Context
 	AccountService services.AccountService
 }
 
-//BeforeActivation
-// Register paths of controllers
+//BeforeActivation fuc
 func (c *AccountController) BeforeActivation(b mvc.BeforeActivation) {
 	b.Handle("POST", "/register", "PostSignup")
 	b.Handle("POST", "/signin", "PostSignin")
 	b.Handle("POST", "/test", "PostTest")
 }
 
-func (c *AccountController) PostSignup() (results string) {
+// PostSignup method
+func (c *AccountController) PostSignup() (results *models.AccountModel, err error) {
 	var _signupData = models.SignupModel{}
 	er := c.Ctx.ReadJSON(&_signupData)
 	if er != nil {
-		log.Fatal()
+		logger.LogErr.Println(er)
 		return
+	}
+
+	if _signupData.Username == "" || _signupData.Firstname == "" || _signupData.Lastname == "" || _signupData.Password == "" {
+		logger.LogDebug.Println("Signup infomation is invalid!")
+		return nil, errors.New("Loi roi")
 	}
 
 	var _sign models.SignupModel
@@ -46,13 +52,10 @@ func (c *AccountController) PostSignup() (results string) {
 		logger.LogErr.Println(err)
 	}
 
-	res, e := json.Marshal(acc)
-	if e != nil {
-		logger.LogErr.Println(e)
-	}
-	return string(res)
+	return acc, err
 }
 
+//PostSignin func
 func (c *AccountController) PostSignin() (results string) {
 	var _signinData = models.SigninModel{}
 	err := c.Ctx.ReadJSON(&_signinData)
@@ -68,6 +71,7 @@ func (c *AccountController) PostSignin() (results string) {
 	return "Da dang nhap"
 }
 
+//PostTest func
 func (c *AccountController) PostTest() string {
 
 	var profile models.SignupModel
@@ -78,9 +82,8 @@ func (c *AccountController) PostTest() string {
 	return z
 }
 
-// func AccountHanlder(app *mvc.Application) {
+//AccountHandler func
+func AccountHandler(app *mvc.Application) {
 
-// 	//app.Register(accountService)
-
-// 	app.Handle(new(AccountController))
-// }
+	app.Handle(new(AccountController))
+}

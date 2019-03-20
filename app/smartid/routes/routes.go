@@ -29,8 +29,12 @@ func RegisterRoute(app *iris.Application) {
 	accountRepository := repositories.NewAccountRepositoryContext(db, "accounts")
 	accountService := services.NewAccountService(accountRepository)
 
-	account := mvc.New(app.Party("/account"))
+	account := mvc.New(app.Party("/account").AllowMethods(iris.MethodPost, iris.MethodOptions))
+	//	account := mvc.New(app.Party("/account").AllowMethods(iris.MethodOptions))
 	account.Register(accountService)
 	account.Handle(new(controllers.AccountController))
+
+	auth := mvc.New(app.Party("/auth"))
+	auth.Handle(new(controllers.AuthController))
 
 }
