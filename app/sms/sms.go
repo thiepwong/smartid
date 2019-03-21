@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/go-redis/redis"
 	"github.com/kataras/iris"
-	"github.com/thiepwong/smartid/app/smartid/routes"
+	"github.com/thiepwong/smartid/app/sms/routes"
 	"github.com/thiepwong/smartid/pkg/config"
 )
 
@@ -20,6 +21,7 @@ func main() {
 
 	app := iris.New()
 
+	ExampleNewClient()
 	crs := func(ctx iris.Context) {
 		ctx.Header("Access-Control-Allow-Origin", "*")
 		ctx.Header("Access-Control-Allow-Credentials", "true")
@@ -33,5 +35,18 @@ func main() {
 	if er != nil {
 		fmt.Println("Server not started!")
 	}
+
+}
+
+func ExampleNewClient() {
+	client := redis.NewClient(&redis.Options{
+		Addr:     "171.244.49.164:25355",
+		Password: "Spincar429fb", // no password set
+		DB:       0,              // use default DB
+	})
+
+	t, err := client.Ping().Result()
+	fmt.Println(t, err)
+	// Output: PONG <nil>
 
 }
