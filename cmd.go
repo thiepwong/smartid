@@ -21,8 +21,6 @@ func main() {
 		os.Exit(1)
 	}
 	fmt.Println("Bat dau chay cmd")
-	//args := []string{"what", "ever", "you", "like"}
-	//_a := []string{"name", "thep", "age", "345"}
 	cmd := exec.Command("app/smartid/smartid", "-s", "8", "-n", "2")
 	cc := cmd.Start()
 	if cc != nil {

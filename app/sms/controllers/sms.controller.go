@@ -19,10 +19,14 @@ func (c *SmsController) BeforeActivation(b mvc.BeforeActivation) {
 }
 
 func (c *SmsController) PostLogin() MvcResult {
-	c.Result.GenerateResult(0, "", c.Ctx.FormValues())
+	kq := c.Service.Login("id", "khong the hieu duoc tai sao khong tin thay thong tin tren redis")
+	c.Result.GenerateResult(0, "", kq)
 	return c.Result
 }
 
 func (c *SmsController) PostSend() MvcResult {
+	msg := c.Ctx.FormValue("id")
+	k := c.Service.SendSms(msg)
+	c.Result.GenerateResult(0, "", k)
 	return c.Result
 }

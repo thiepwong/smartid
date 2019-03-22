@@ -2,6 +2,7 @@ package services
 
 import (
 	"github.com/thiepwong/smartid/app/sms/repositories"
+	"github.com/thiepwong/smartid/pkg/config"
 )
 
 type SmsService interface {
@@ -11,16 +12,21 @@ type SmsService interface {
 
 type smsServiceImp struct {
 	smsRepo repositories.SmsRepository
+	vendor  *config.Vendor
 }
 
-func NewSmsService(repo repositories.SmsRepository) SmsService {
-	return &smsServiceImp{repo}
+func NewSmsService(repo repositories.SmsRepository, cfg *config.Vendor) SmsService {
+	return &smsServiceImp{repo, cfg}
 }
 
 func (s *smsServiceImp) Login(username string, password string) string {
-	return ""
+
+	//s.vendor.
+	s.smsRepo.Save(username, password, 200000)
+	c := s.smsRepo.Read(username)
+	return "Da ghi xong " + c
 }
 
 func (s *smsServiceImp) SendSms(msg string) string {
-	return ""
+	return s.smsRepo.Read(msg)
 }
