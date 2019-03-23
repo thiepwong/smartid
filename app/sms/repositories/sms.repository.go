@@ -33,7 +33,7 @@ func (r *smsRepositoryImp) Read(key string) string {
 }
 
 func (r *smsRepositoryImp) Save(key string, value interface{}, ttl time.Duration) bool {
-	err := r.redis.Client.Set(key, value, ttl*1000000).Err()
+	err := r.redis.Client.Set(key, value, ttl*1000000000).Err()
 	if err != nil {
 		return false
 	}

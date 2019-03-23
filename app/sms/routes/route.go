@@ -17,7 +17,7 @@ func RegisterRoute(app *iris.Application, cors context.Handler, config *config.C
 
 	red := datasource.GetRedisDb(config.Database.Redis)
 	smsRepository := repositories.NewSmsRepository(red)
-	smsService := services.NewSmsService(smsRepository)
+	smsService := services.NewSmsService(smsRepository, config.Vendor)
 	mvcResult := controllers.NewMvcResult(nil)
 	account := mvc.New(app.Party("/sms", cors).AllowMethods(iris.MethodOptions))
 	account.Register(smsService, mvcResult)

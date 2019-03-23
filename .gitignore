@@ -12,3 +12,4 @@
 *.out
 app/smartid/debug
 .vscode/launch.json
+app/sms/debug
