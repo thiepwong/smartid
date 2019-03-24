@@ -1,0 +1,3 @@
+2019/03/23 23:02:39 Error : logs/error.log
+2019/03/23 23:30:07 Post https://smsapi2.irismedia.vn/oauth2/token: dial tcp 210.211.101.39:443: connectex: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond.
+2019/03/23 23:31:28 Post https://smsapi2.irismedia.vn/api/Sms: dial tcp 210.211.101.39:443: connectex: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond.

@@ -113,3 +113,6 @@
 2019/03/20 17:32:18 unexpected end of JSON input
 2019/03/20 17:32:22 username is existed
 2019/03/20 17:32:34 unexpected end of JSON input
+2019/03/24 00:31:09 open conf/conf.ini: The system cannot find the path specified.
+2019/03/24 00:52:20 redis: can't marshal services.OTP (implement encoding.BinaryMarshaler)
+2019/03/24 00:52:22 redis: can't marshal services.OTP (implement encoding.BinaryMarshaler)

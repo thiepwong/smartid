@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -17,9 +18,10 @@ import (
 	"github.com/thiepwong/smartid/pkg/config"
 )
 
+// SmsService interface of service
 type SmsService interface {
 	Login() interface{}
-	SendSms(string, string) interface{}
+	SendMsg(string, string) interface{}
 }
 
 type smsServiceImp struct {
@@ -33,8 +35,7 @@ type smsToken struct {
 	ExpiresIn   time.Duration `json:"expires_in"`
 }
 
-//{"access_token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1bmlxdWVfbmFtZSI6InNtc19zbWFydGxpZmUiLCJyb2xlIjpbIklyaXMuQjJCMjAxOC5TbXMuVmlld1JlcG9ydCIsIklyaXMuQjJCLlNtcy5TZW5kIiwiSXJpcy5CMkIyMDE4LlNtcy5WaWV3Il0sIm5hbWVpZCI6ImI4YjVmNGU1LWRmNmEtNDY3MC1iMGUyLWZkMzQ1MGNlMTFhNiIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6Mjk5MiIsImF1ZCI6ImEyN2M3ODk0LTRjOGItNDM4ZS1iMDY3LWNjZmY0YjNlOTliZCIsImV4cCI6MTU1MzMyMzk1MSwibmJmIjoxNTUzMzIyMTUxfQ.YwQZQm5vKP6YWcX_tsMqkawmdtfFxNIdzenMNjArUMA","token_type":"bearer","expires_in":1799}
-
+//NewSmsService function for register new service
 func NewSmsService(repo repositories.SmsRepository, cfg *config.Vendor) SmsService {
 	return &smsServiceImp{repo, cfg}
 }
@@ -43,20 +44,21 @@ func (s *smsServiceImp) Login() interface{} {
 	_token := vendorLogin(s.vendor.Url+s.vendor.LoginPath, s.vendor.Username, s.vendor.Password)
 	_smsToken := smsToken{}
 	json.Unmarshal([]byte(_token), &_smsToken)
-	s.smsRepo.Save("sms_token", _smsToken, _smsToken.ExpiresIn)
+	s.smsRepo.Save("sms_token", _token, _smsToken.ExpiresIn)
 	return &_smsToken
 }
 
-func (s *smsServiceImp) SendSms(mobile string, msg string) interface{} {
+func (s *smsServiceImp) SendMsg(mobile string, msg string) interface{} {
 	_smsToken := smsToken{}
 	_token := s.smsRepo.Read("sms_token")
 	if _token == "" {
 		_token = vendorLogin(s.vendor.Url+s.vendor.LoginPath, s.vendor.Username, s.vendor.Password)
-		s.smsRepo.Save("sms_token", _smsToken, _smsToken.ExpiresIn)
+		json.Unmarshal([]byte(_token), &_smsToken)
+		s.smsRepo.Save("sms_token", _token, _smsToken.ExpiresIn)
+
 	}
 
 	json.Unmarshal([]byte(_token), &_smsToken)
-
 	return sendMessage(s.vendor.Url+s.vendor.SendMsgPath, _smsToken.AccessToken, mobile, msg)
 
 }
@@ -94,22 +96,21 @@ func vendorLogin(path string, username string, password string) string {
 
 func sendMessage(path string, token string, mobile string, msg string) interface{} {
 	client := &http.Client{}
-	msgId := int(time.Now().Unix())
-
 	data := url.Values{}
-	js := []byte(`{
+	_bodyStr := fmt.Sprintf(`{
 		"Brandname": "SMARTLIFE",
 		"SendingList": [
 			{
-				"SmsId": "SMS" ` + strconv.Itoa(msgId) + `,
-				"PhoneNumber": ` + mobile + `,
-				"Content": ` + msg + `,
+				"SmsId": "SMS_%s"  ,
+				"PhoneNumber": "%s",
+				"Content":  "%s",
 				"ContentType": "30"
 			}
 		]
-	}`)
-	data.Add("Brandname", "SMARTLIFE")
+	}`, strconv.Itoa(int(time.Now().Unix())), mobile, msg)
 
+	js := []byte(_bodyStr)
+	data.Add("Brandname", "SMARTLIFE")
 	req, err := http.NewRequest("POST", path, bytes.NewBuffer(js))
 	req.Header.Add("Content-Type", "application/json; charset=utf-8")
 	req.Header.Add("Authorization", "Bearer "+token)

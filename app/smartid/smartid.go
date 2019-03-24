@@ -16,7 +16,6 @@ func main() {
 	if es != nil {
 
 	}
-	fmt.Println(&conf.System, *conf.Node, *conf.Host, *conf.Port, *conf.Cfgpath)
 
 	app := iris.New()
 
@@ -27,9 +26,9 @@ func main() {
 		ctx.Next()
 	}
 	app.Logger().SetLevel("debug")
-	routes.RegisterRoute(app, crs)
+	routes.RegisterRoute(app, crs, &conf)
 
-	er := app.Run(iris.Addr(*conf.Host+":"+strconv.Itoa(*conf.Port)), iris.WithoutPathCorrectionRedirection)
+	er := app.Run(iris.Addr(*conf.Environment.Host+":"+strconv.Itoa(*conf.Environment.Port)), iris.WithoutPathCorrectionRedirection)
 	if er != nil {
 		fmt.Println("Server not started!")
 	}

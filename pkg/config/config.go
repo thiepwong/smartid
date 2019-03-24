@@ -84,7 +84,7 @@ func readConfigFile(c *Config) {
 	db.Redis = &RedisDb{Host: reddb.Key("host").String(), Port: reddb.Key("port").String(), Password: reddb.Key("password").String(), Database: reddb.Key("database").String()}
 
 	vendor := cfg.Section("smsvendor")
-	c.Vendor = &Vendor{Url: vendor.Key("url").String(), LoginPath: vendor.Key("login").String(), SendMsgPath: vendor.Key("login").String(), Username: vendor.Key("username").String(), Password: vendor.Key("password").String()}
+	c.Vendor = &Vendor{Url: vendor.Key("url").String(), LoginPath: vendor.Key("login").String(), SendMsgPath: vendor.Key("send").String(), Username: vendor.Key("username").String(), Password: vendor.Key("password").String()}
 
 	c.Database = db
 }
