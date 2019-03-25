@@ -125,6 +125,8 @@ func execTransactionCreator(c *cli.Context, configPath, toAddr string, value int
 	}
 	transaction := bc.newTransaction(wallet, toAddr, value)
 	m := createMsRequestAddTransaction(transaction)
-	m.export(exportFile)
+
+	//m.export(exportFile)
+	m.toString()
 	defer bc.db.Close()
 }

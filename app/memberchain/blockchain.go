@@ -89,6 +89,7 @@ func (bc *Blockchain) String() string {
 func (bc *Blockchain) addBlock(block *Block) {
 	pow := newProofOfWork(block)
 
+	fmt.Println("Khong dung ", pow.validate())
 	if !pow.validate() {
 		nonce, hash := pow.run()
 		block.Header.Nonce = nonce
@@ -117,6 +118,11 @@ func (bc *Blockchain) addBlock(block *Block) {
 		Error.Panic(err)
 	}
 }
+
+// func (bc *Blockchain) synBlock(block *Block) {
+// 	pow := newProofOfWork(block)
+
+// }
 
 func (bc *Blockchain) putBlock(b *bolt.Bucket, blockHash, blockData []byte) {
 	err := b.Put(blockHash, blockData)

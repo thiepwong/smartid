@@ -12,7 +12,8 @@ var (
 	maxNonce = math.MaxInt64
 )
 
-const difficulty = 16
+// Set difficulty  as 256 - it
+const difficulty = 0
 
 // ProofOfWork represents a proof-of-work
 type ProofOfWork struct {

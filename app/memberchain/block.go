@@ -12,7 +12,7 @@ import (
 )
 
 /*
-Block simple structure
+Block  structure
 */
 type Block struct {
 	Transactions []Transaction `json:"Transactions"`

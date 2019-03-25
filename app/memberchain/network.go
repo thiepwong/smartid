@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"io"
 	"net"
 	"os"
@@ -52,8 +53,9 @@ func syncWithNeighborNode(bc *Blockchain) {
 
 func sendRequestBc(node Node, bc *Blockchain) bool {
 	myHeight := bc.getBestHeight()
-
+	fmt.Println("My height: ", myHeight)
 	neighborHeight, err := getNeighborBcBestHeight(node)
+	fmt.Println("Networks height: ", myHeight)
 
 	if err != nil {
 		return false
@@ -64,6 +66,8 @@ func sendRequestBc(node Node, bc *Blockchain) bool {
 
 	for i := 1; i <= minHeight; i++ {
 		if compareBlockWithNeighbor(bc.getBlockByHeight(i), node) {
+			fmt.Println(bc.getBlockByHeight(i))
+
 			Info.Printf("Block %d similarity checking completed. Progress: %d%%", i, i*100/minHeight)
 		} else {
 			Error.Fatal("Blockchain differences detected. Program exit.")
@@ -106,7 +110,7 @@ func compareBlockWithNeighbor(b *Block, node Node) bool {
 	scanner.Scan()
 	msAsBytes := scanner.Bytes()
 	msResponse := deserializeMessage(msAsBytes)
-
+	fmt.Println(msResponse)
 	isValid, err := strconv.ParseBool(string(msResponse.Data))
 
 	if err != nil {

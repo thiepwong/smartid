@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"strconv"
@@ -161,9 +162,20 @@ func (m *Message) export(filePath string) {
 		os.Exit(1)
 	}
 
-	e = ioutil.WriteFile(filePath, prettyMarshal, 0644)
+	e = ioutil.WriteFile(filePath, prettyMarshal, os.ModePerm)
 	if e != nil {
 		Error.Println(e.Error())
 		os.Exit(1)
 	}
+}
+
+func (m *Message) toString() {
+	prettyMarshal, e := json.MarshalIndent(m, "", "  ")
+	if e != nil {
+		Error.Println(e.Error())
+		os.Exit(1)
+	}
+
+	fmt.Print("Thong tin transaction: ", string(prettyMarshal))
+
 }
